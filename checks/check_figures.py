@@ -14,8 +14,8 @@
 # Usage:   python3 checks/check_figures.py <published dir> <figures dir>
 #          <checks output dir>
 # Outputs: <checks output dir>/figures.csv; prints one line per figure (a
-#          figure that was not drawn is skipped); exit status 1 if a histogram
-#          differs. The point-and-line plots are reported only.
+#          figure that was not drawn is skipped); exit status 1 if a figure
+#          differs.
 # -----------------------------------------------------------------------------
 import csv
 import os
@@ -76,4 +76,4 @@ for kind in ('histogram', 'points'):
     print(f"{kind}: {sum(r['result'] == 'matches' for r in of)} of {len(of)} match, "
           f"{sum(r['result'] == 'differs' for r in of)} differ, "
           f"{sum(r['result'] == 'not drawn' for r in of)} not drawn")
-sys.exit(1 if any(r['kind'] == 'histogram' and r['result'] == 'differs' for r in rows) else 0)
+sys.exit(1 if any(r['result'] == 'differs' for r in rows) else 0)
