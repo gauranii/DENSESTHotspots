@@ -3,10 +3,11 @@
 # Paper:   Gauran, Park, Lim, Park, Zylstra, Peterson, Kann, Spouge (2018).
 #          Empirical Null Estimation Using Zero-Inflated Discrete Mixture
 #          Distributions and its Application to Protein Domain Data.
-#          Biometrics 74:458-471. Figures 1 and 2, Web Figures S1 to S6.
-# Purpose: Data of the histogram figures: the settings of the 24 simulated
-#          data sets, the generators of a null / non-null mixture of counts,
-#          and the bar heights of a histogram of counts.
+#          Biometrics 74:458-471. Figures 1 and 2, Web Figures S1 to S12.
+# Purpose: Data of the figures: the settings of the 24 simulated data sets,
+#          the generators of a null / non-null mixture of counts, the bar
+#          heights of a histogram of counts, and the observed and fitted
+#          null probabilities of a protein domain (Web Figures S7 to S12).
 # Inputs:  data/realdata.txt (protein domain counts, read by protein_counts()).
 # Outputs: None.
 # Usage:   source("R/setup.R")
@@ -14,7 +15,9 @@
 # Source:  PLOTS.R of 30 June 2016 (mixture1; data<k>.pdf), PLOTS.R of
 #          24 January 2017 (mixture2; bar<k>.pdf), last block of the R history
 #          of 24 February 2017 (mixture3, mixture4; mixed<k>.pdf),
-#          realdata8.Rhistory (protein histograms).
+#          realdata8.Rhistory (protein histograms); FINALREAL 0418.R of
+#          18 April 2017 (null-fit plots; the code of the published version
+#          of July 2017 is not kept, see null_fit_series()).
 # -----------------------------------------------------------------------------
 
 CUTOFF        <- 5    # C: non-null counts are built as C + 1 + D + signal + null count
@@ -152,4 +155,35 @@ bar_heights <- function(x) {
 protein_counts <- function(domain, data_file) {
   counts <- read.delim(data_file)[[domain]]
   counts[!is.na(counts)]
+}
+
+# Protein domains of Web Figures S7 to S12, one figure per domain; panel A
+# uses the cutoff criterion C1, panel B the criterion C2.
+NULL_FIT_DOMAINS <- c(WebFigS7 = "cd00031", WebFigS8 = "cd00054", WebFigS9 = "cd00180",
+                      WebFigS10 = "cd00204", WebFigS11 = "cd00882", WebFigS12 = "pfam00001")
+
+#' Observed and fitted null probabilities of a protein domain.
+#'
+#' For one cutoff criterion: the observed share of positions with count
+#' 0, 1, ..., K ("fHat"), and pi0 times the fitted ZIGP and ZIP probability
+#' of each count up to the cutoff chosen for that model ("zigp", "zip"),
+#' where K is the larger of the two cutoffs. The April 2017 draft of the
+#' plot (FINALREAL 0418.R) drew fHat only up to the ZIP cutoff; the
+#' published panels draw it up to K, as here.
+#'
+#' @param x Counts of the domain.
+#' @param fits Null fits of the domain, from `fit_domain()`.
+#' @param criterion One of `CUTOFFS`.
+#' @return Data frame with the columns `fEstimation` (series), `C` (count)
+#'   and `values` (probability).
+null_fit_series <- function(x, fits, criterion) {
+  fit <- function(model) fits[fits$cutoff == criterion & fits$model == model, ]
+  zigp <- fit("ZIGP")
+  zip <- fit("ZIP")
+  K <- max(zigp$C, zip$C)
+  fitted <- function(f) f$pi0 * zigp_density(0:f$C, f$eta, f$lambda, f$theta)
+  series <- list(fHat = count_up_to(x, K) / length(x), zigp = fitted(zigp), zip = fitted(zip))
+  data.frame(fEstimation = rep(names(series), lengths(series)),
+             C = unlist(lapply(series, function(v) seq_along(v) - 1)),
+             values = unlist(series), row.names = NULL)
 }
