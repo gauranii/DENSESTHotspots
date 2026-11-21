@@ -133,8 +133,8 @@ the defaults of its script and compares it with the paper:
   heights proportional), and the points of each series of a null-fit plot
   (same number of points, same positions after one affine map per axis).
 
-The comparison is written to `checks/RESULTS.md`, one row per table row
-and figure.
+The comparison is written to `checks/RESULTS.md` (not kept in the repository),
+one row per table row and figure.
 
 ## Data
 
