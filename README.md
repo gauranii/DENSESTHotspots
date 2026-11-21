@@ -1,4 +1,4 @@
-# REPO_NAME: empirical null estimation with zero-inflated discrete mixtures
+# EmpiricalNullZIGP: empirical null estimation with zero-inflated discrete mixtures
 
 R code for
 
