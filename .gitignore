@@ -67,3 +67,5 @@ __pycache__/
 
 # Output of checks/run_checks.sh, written when the checks are run
 /checks/RESULTS.md
+# Protein domain counts (TCGA), not included in the repository
+/data/realdata.txt

@@ -36,15 +36,29 @@ PAPER <- list(
 #'
 #' @param root Repository root.
 #' @param output Folder in which results/ and figures/ are written.
-#' @return Named list of paths: `data`, `archive`, `results`, `figures`.
+#' @return Named list of paths: `data` (ZINULL_DATA when set), `archive`,
+#'   `results`, `figures`.
 project_paths <- function(root, output = Sys.getenv("ZINULL_OUTPUT", root)) {
-  list(data    = file.path(root, "data", "realdata.txt"),
+  list(data    = Sys.getenv("ZINULL_DATA", file.path(root, "data", "realdata.txt")),
        archive = file.path(root, "archive"),
        results = file.path(output, "results"),
        figures = file.path(output, "figures"))
 }
 
 PATHS <- project_paths(REPO_ROOT)
+
+#' Stop with a message when the protein domain data file is not there.
+#'
+#' @param path Path of data/realdata.txt.
+#' @return `path`, invisibly.
+require_data <- function(path) {
+  if (!file.exists(path))
+    stop("The protein domain counts (data/realdata.txt) are not included in ",
+         "this repository. Place the file in data/ of the directory the ",
+         "command runs from, or set ZINULL_DATA to its path.",
+         call. = FALSE)
+  invisible(path)
+}
 
 #' Path of an output file, creating its folder when needed.
 #'

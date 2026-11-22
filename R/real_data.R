@@ -16,7 +16,7 @@
 #' @param path File with one column per domain after the `id` column.
 #' @return Named list (one element per domain) of count vectors.
 read_domains <- function(path) {
-  protein <- read.delim(path, sep = "", header = TRUE)
+  protein <- read.delim(require_data(path), sep = "", header = TRUE)
   lapply(protein[-1], function(counts) counts[!is.na(counts)])
 }
 

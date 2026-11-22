@@ -15,8 +15,15 @@ set -euo pipefail
 python=${PYTHON:-python3}  # a Python 3 interpreter (standard library only)
 output=${ZINULL_OUTPUT:-$(pwd)}
 report=${1:-checks/RESULTS.md}
+data=${ZINULL_DATA:-data/realdata.txt}
 
 for script in scripts/*.R; do
+  # Outputs of the protein domain data are skipped when data/realdata.txt,
+  # which is not included in the repository, is not there.
+  if [ ! -f "$data" ] && grep -q 'data/realdata.txt' "$script"; then
+    echo "skipped $script ($data not found)"
+    continue
+  fi
   Rscript "$script" > /dev/null
 done
 

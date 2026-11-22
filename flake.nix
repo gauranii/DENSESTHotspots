@@ -33,6 +33,11 @@
           set -euo pipefail
           export ZINULL_OUTPUT="''${ZINULL_OUTPUT:-$PWD}"
           export OPENBLAS_NUM_THREADS=1
+          # The protein domain counts are not in the repository: use
+          # data/realdata.txt of the start directory when it is there.
+          if [ -z "''${ZINULL_DATA:-}" ] && [ -f "$PWD/data/realdata.txt" ]; then
+            export ZINULL_DATA="$PWD/data/realdata.txt"
+          fi
           cd ${self}
           for script in ${lib.concatStringsSep " " names}; do
             ${rEnv pkgs}/bin/Rscript "scripts/$script.R" "$@"

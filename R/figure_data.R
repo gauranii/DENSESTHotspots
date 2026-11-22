@@ -153,7 +153,7 @@ bar_heights <- function(x) {
 #' @param data_file Path of data/realdata.txt.
 #' @return Vector of the counts at the positions of the domain.
 protein_counts <- function(domain, data_file) {
-  counts <- read.delim(data_file)[[domain]]
+  counts <- read.delim(require_data(data_file))[[domain]]
   counts[!is.na(counts)]
 }
 
