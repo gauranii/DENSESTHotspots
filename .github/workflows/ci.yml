@@ -1,0 +1,33 @@
+# -----------------------------------------------------------------------------
+# File:    .github/workflows/ci.yml
+# Paper:   Gauran, Park, Lim, Park, Zylstra, Peterson, Kann, Spouge (2018).
+#          Empirical Null Estimation Using Zero-Inflated Discrete Mixture
+#          Distributions and its Application to Protein Domain Data.
+#          Biometrics 74:458-471.
+# Purpose: Continuous integration: run `nix flake check` on every push and
+#          pull request. The check builds every table and figure that needs
+#          no private data with the default settings, compares them with the
+#          paper, and runs the unit tests (README.md). The protein domain
+#          counts are not in the repository; their outputs are skipped.
+# -----------------------------------------------------------------------------
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: nix flake check
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+      - run: nix flake check --print-build-logs

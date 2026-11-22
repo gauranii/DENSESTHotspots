@@ -175,35 +175,53 @@ Python   3.14.7
 
 R        4.6.1
   boot         1.3-32
+  brio         1.1.5
+  callr        3.8.0
   class        7.3-23
   cli          3.6.6
   cluster      2.1.8.2
   codetools    0.2-20
   cpp11        0.5.5
+  crayon       1.5.3
+  desc         1.4.3
+  diffobj      0.3.6
+  evaluate     1.0.5
   farver       2.1.2
   foreign      0.8-91
+  fs           2.1.0
   ggplot2      4.0.3
   glue         1.8.1
   gtable       0.3.6
   isoband      0.3.0
+  jsonlite     2.0.0
   KernSmooth   2.23-26
   labeling     0.4.3
   lattice      0.22-9
   lifecycle    1.0.5
+  magrittr     2.0.5
   MASS         7.3-65
   Matrix       1.7-5
   mgcv         1.9-4
   nlme         3.1-169
   nnet         7.3-20
+  otel         0.2.0
+  pkgbuild     1.4.8
+  pkgload      1.5.3
+  praise       1.0.0
+  processx     3.9.0
+  ps           1.9.3
   R6           2.6.1
   RColorBrewer 1.1-3
   rlang        1.3.0
   rpart        4.1.27
+  rprojroot    2.1.1
   S7           0.2.2
   scales       1.4.0
   spatial      7.3-18
   survival     3.8-6
+  testthat     3.3.2
   vctrs        0.7.3
   viridisLite  0.4.3
+  waldo        0.6.2
   withr        3.0.3
 ```
