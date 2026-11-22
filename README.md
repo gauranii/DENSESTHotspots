@@ -12,8 +12,8 @@ Code for
 
 Which positions of a protein domain carry more somatic mutations in tumors
 than chance would give? Most positions carry few or none, so the counts have
-far more zeros than a Poisson null allows, and a wrong null finds too many or
-too few. The paper takes the counts at or below an unknown cutoff C as the
+far more zeros than a Poisson null allows, and the null that is chosen
+decides how many positions are found. The paper takes the counts at or below an unknown cutoff C as the
 null and fits a zero-inflated generalized Poisson (ZIGP), zero-inflated
 Poisson (ZIP), generalized Poisson (GP) or Poisson (P) distribution to them by
 an EM algorithm that treats the counts above C as missing. C is chosen by one
