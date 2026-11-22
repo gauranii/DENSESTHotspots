@@ -64,3 +64,6 @@ rsconnect/
 
 # Python byte code and compiled-function caches
 __pycache__/
+
+# Output of checks/run_checks.sh, written when the checks are run
+/checks/RESULTS.md
