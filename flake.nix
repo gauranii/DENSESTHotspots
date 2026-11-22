@@ -26,6 +26,20 @@
           ];
         };
 
+      # Python with the packages of python/zinull; numba compiles the random
+      # number generator and the loops that follow R's order of operations.
+      pyEnv =
+        pkgs:
+        pkgs.python3.withPackages (
+          ps: with ps; [
+            numpy
+            pandas
+            matplotlib
+            numba
+            pytest
+          ]
+        );
+
       # One command per table and figure of the paper (filled in below).
       scripts = import ./scripts.nix;
 
@@ -53,14 +67,40 @@
         meta.description = "Build ${name} of the paper";
       };
 
+      # The same commands with the Python scripts, as py-<name>.
+      pyRunner =
+        pkgs: name: names:
+        pkgs.writeShellScript "zinull-py-${name}" ''
+          set -euo pipefail
+          export ZINULL_OUTPUT="''${ZINULL_OUTPUT:-$PWD}"
+          export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+          if [ -z "''${ZINULL_DATA:-}" ] && [ -f "$PWD/data/realdata.txt" ]; then
+            export ZINULL_DATA="$PWD/data/realdata.txt"
+          fi
+          export NUMBA_CACHE_DIR="''${NUMBA_CACHE_DIR:-''${TMPDIR:-/tmp}/zinull-numba}"
+          export PYTHONDONTWRITEBYTECODE=1
+          cd ${self}
+          for script in ${lib.concatStringsSep " " names}; do
+            ${pyEnv pkgs}/bin/python "python/scripts/$script.py" "$@"
+          done
+        '';
+      pyApp = pkgs: name: names: {
+        type = "app";
+        program = "${pyRunner pkgs name names}";
+        meta.description = "Build ${name} of the paper with the Python scripts";
+      };
+
       # ----- Unit tests -----
       # Shell functions that run the unit tests of the directory they are
-      # called in: testthat over tests/testthat/ (unit_r).
+      # called in: testthat over tests/testthat/ (unit_r) and pytest over
+      # python/tests/ (unit_python).
       unitTests = pkgs: ''
-        export OPENBLAS_NUM_THREADS=1
-        export PATH=${rEnv pkgs}/bin:$PATH
+        export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+        export NUMBA_CACHE_DIR="''${NUMBA_CACHE_DIR:-''${TMPDIR:-/tmp}/zinull-numba}"
+        export PYTHONDONTWRITEBYTECODE=1
+        export PATH=${rEnv pkgs}/bin:${pyEnv pkgs}/bin:$PATH
         unit_r() { Rscript tests/testthat.R; }
-        # Unit tests in other languages are added here, one function each.
+        unit_python() { python -m pytest -p no:cacheprovider python/tests; }
       '';
 
       # ----- Help -----
@@ -83,13 +123,15 @@
           ++ rows
           ++ [
             (row "all" "every table and figure")
-            # Commands in other languages are listed here.
+            ""
+            "The same commands with the Python scripts (python/scripts/), an independent check of the R numbers:"
+            "  nix run .#py-<command>   for example nix run .#py-table1, nix run .#py-all"
             ""
             "Other commands:"
-            (row "test" "unit tests of the functions in R/")
+            (row "test" "unit tests of the functions in R/ and python/zinull/")
             (row "versions" "print the software versions")
             (row "help" "print this list (also: nix run . -- --help)")
-            "  nix flake check         build every output, compare it with the paper, run the unit tests"
+            "  nix flake check         build every output, compare it with the paper and with Python, run the unit tests"
             "  nix develop             a shell with the same R and Python"
             ""
             "Results are written to results/ and figures/ of the current directory (or of ZINULL_OUTPUT)."
@@ -112,21 +154,24 @@
         default = pkgs.mkShell {
           packages = [
             (rEnv pkgs)
-            pkgs.python3
+            (pyEnv pkgs)
           ];
           OPENBLAS_NUM_THREADS = 1;
+          VECLIB_MAXIMUM_THREADS = 1;
         };
       });
 
       apps = forEachSystem (
         pkgs:
         lib.mapAttrs (name: script: app pkgs name [ script ]) scripts
+        // lib.mapAttrs' (name: script: lib.nameValuePair "py-${name}" (pyApp pkgs name [ script ])) scripts
         // {
           all = app pkgs "all" (lib.attrValues scripts);
+          py-all = pyApp pkgs "all" (lib.attrValues scripts);
           versions = {
             type = "app";
             program = "${pkgs.writeShellScript "zinull-versions" ''
-              export PATH=${rEnv pkgs}/bin:${pkgs.python3}/bin:$PATH
+              export PATH=${rEnv pkgs}/bin:${pyEnv pkgs}/bin:$PATH
               cd ${self}
               exec bash checks/versions.sh "$@"
             ''}";
@@ -141,8 +186,9 @@
               ${unitTests pkgs}
               [ -f tests/testthat.R ] || cd ${self}
               unit_r
+              unit_python
             ''}";
-            meta.description = "Run the unit tests of the R code";
+            meta.description = "Run the unit tests of the R and the Python code";
           };
           # `nix run .#help`, `nix run . -- --help` and `nix run .` print the
           # list of commands.
@@ -154,14 +200,14 @@
       # Build every table and figure with the default settings and compare
       # each with the paper; the result is the comparison (checks/RESULTS.md).
       # The check fails when an output cannot be built or the software
-      # versions differ from README.md; cell by cell results are in the output.
+      # versions differ from docs/DETAILS.md; cell by cell results are in the output.
       checks = forEachSystem (pkgs: {
         outputs =
           pkgs.runCommand "zinull-outputs"
             {
               nativeBuildInputs = [
                 (rEnv pkgs)
-                pkgs.python3
+                (pyEnv pkgs)
               ];
             }
             ''
@@ -180,6 +226,38 @@
           unit_r | tee $TMPDIR/unit-r.txt
           cp $TMPDIR/unit-r.txt $out
         '';
+
+        # The unit tests of every function in python/zinull/ (pytest,
+        # python/tests/); the values of R they compare with are stored in
+        # python/tests/r_values.json.
+        unit-python = pkgs.runCommand "zinull-unit-python" { nativeBuildInputs = [ (pyEnv pkgs) ]; } ''
+          export HOME=$TMPDIR NUMBA_CACHE_DIR=$TMPDIR PYTHONDONTWRITEBYTECODE=1
+          export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+          set -o pipefail
+          cd ${self}
+          python -m pytest -p no:cacheprovider python/tests | tee $TMPDIR/unit-python.txt
+          cp $TMPDIR/unit-python.txt $out
+        '';
+
+        # Build every table and figure with the R and with the Python
+        # scripts and compare the two; the result is the comparison
+        # (checks/PYTHON.md, with the stored comparison of the reruns).
+        python =
+          pkgs.runCommand "zinull-python"
+            {
+              nativeBuildInputs = [
+                (rEnv pkgs)
+                (pyEnv pkgs)
+              ];
+            }
+            ''
+              export HOME=$TMPDIR NUMBA_CACHE_DIR=$TMPDIR PYTHONDONTWRITEBYTECODE=1
+              export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 CORES=4
+              cd ${self}
+              bash checks/check_python.sh archive $TMPDIR/work $TMPDIR/PYTHON.md $TMPDIR \
+                || { cat $TMPDIR/PYTHON.md; exit 1; }
+              cp $TMPDIR/PYTHON.md $out
+            '';
       });
 
       formatter = forEachSystem (pkgs: pkgs.nixfmt-rfc-style);

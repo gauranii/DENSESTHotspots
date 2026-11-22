@@ -1,0 +1,9 @@
+output,mode,source,files,values,not_identical,max_abs_diff,verdict,r_seconds,python_seconds,cores,problems
+table1+webtableS2,rerun,"geometric, pi0 = 0.80, C = 5: replications 1:2 of ZIP1, ZIGP1, ZIGP2",8,2160,0,0,identical,3.3,1.9,4,
+table2+webtableS3,rerun,"binomial, pi0 = 0.35, C = 5: replications 1:2 of ZIP2, ZIGP3, ZIGP4",8,2160,0,0,identical,3.5,1.4,4,
+webtableS4+webtableS6,rerun,"geometric, pi0 = 0.85, C = 5: replications 1:2 of ZIP3, ZIGP5, ZIGP6",8,2160,0,0,identical,3.0,1.4,4,
+webtableS5+webtableS7,rerun,"binomial, pi0 = 0.80, C = 5: replications 1:2 of ZIP4, ZIGP7, ZIGP8",8,2160,0,0,identical,2.5,1.3,4,
+webtableS8+webtableS12,rerun,"geometric, pi0 = 0.80, C = 1: replications 1:2 of ZIP1, ZIGP1, ZIGP2",8,2160,0,0,identical,4.0,1.5,4,
+webtableS9+webtableS13,rerun,"binomial, pi0 = 0.35, C = 1: replications 1:2 of ZIP2, ZIGP3, ZIGP4",8,2160,0,0,identical,2.8,1.3,4,
+webtableS10+webtableS14,rerun,"geometric, pi0 = 0.85, C = 1: replications 1:2 of ZIP3, ZIGP5, ZIGP6",8,2160,0,0,identical,3.1,1.4,4,
+webtableS11+webtableS15,rerun,"binomial, pi0 = 0.80, C = 1: replications 1:2 of ZIP4, ZIGP7, ZIGP8",8,2160,0,0,identical,2.5,1.3,4,
