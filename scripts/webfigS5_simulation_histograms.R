@@ -8,11 +8,11 @@
 #          non-null counts (black, geometric signal) overlap the null counts
 #          (gray): ZIGP (A, B) and ZIP (C) null counts, 85 % null counts.
 # Inputs:  None (simulated data, seed 889191 + 111).
-# Outputs: figures/WebFigS5{A,B,C}_simulation_histogram_{MZIGP5,MZIGP6,MZIP3}-geometric.pdf
+# Outputs: figures/FigS5{A,B,C}_simulation_histogram_{MZIGP5,MZIGP6,MZIP3}-geometric.pdf
 # Usage:   Rscript scripts/webfigS5_simulation_histograms.R
 # Source:  Last block of the R history of 24 February 2017 (mixed7, mixed8, mixed9).
 # -----------------------------------------------------------------------------
 
 source("R/setup.R")
 
-save_simulation_histograms("WebFigS5", PAPER, PATHS)
+save_simulation_histograms("FigS5", PAPER, PATHS)

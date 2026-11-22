@@ -8,11 +8,11 @@
 #          binomial signal, null counts over non-null counts (black): ZIGP
 #          (A, B) and ZIP (C) null counts.
 # Inputs:  None (simulated data, seed 889191 + 111).
-# Outputs: figures/WebFigS2{A,B,C}_simulation_histogram_{ZIGP7,ZIGP8,ZIP4}-binomial.pdf
+# Outputs: figures/FigS2{A,B,C}_simulation_histogram_{ZIGP7,ZIGP8,ZIP4}-binomial.pdf
 # Usage:   Rscript scripts/webfigS2_simulation_histograms.R
 # Source:  PLOTS.R of 24 January 2017 (bar1, bar2, bar3).
 # -----------------------------------------------------------------------------
 
 source("R/setup.R")
 
-save_simulation_histograms("WebFigS2", PAPER, PATHS)
+save_simulation_histograms("FigS2", PAPER, PATHS)

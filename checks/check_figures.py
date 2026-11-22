@@ -31,13 +31,13 @@ rows = []
 
 
 def label(name):
-    """Fig1A_... -> 'Figure 1A', WebFigS10B_... -> 'Web Figure S10B'."""
+    """Fig1A_... -> 'Figure 1A', FigS10B_... -> 'Web Figure S10B'."""
     panel = name.split('_')[0]
-    return panel.replace('WebFig', 'Web Figure ') if panel.startswith('Web') else panel.replace('Fig', 'Figure ')
+    return panel.replace('FigS', 'Web Figure S') if panel.startswith('FigS') else panel.replace('Fig', 'Figure ')
 
 
 def order(name):
-    web, number, panel = re.match(r'(Web)?Fig\D*(\d+)(\w)', name).groups()
+    web, number, panel = re.match(r'Fig(S)?(\d+)(\w)', name).groups()
     return bool(web), int(number), panel
 
 

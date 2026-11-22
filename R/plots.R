@@ -77,7 +77,7 @@ save_figure <- function(name, figures_dir, draw) {
 #'
 #' The files are named <figure><panel>_simulation_histogram_<model>-<signal>.pdf.
 #'
-#' @param figure Figure of the paper (for example "WebFigS3").
+#' @param figure Figure of the paper (for example "FigS3").
 #' @param settings Settings of the paper (`n`, `figure_seed`).
 #' @param paths Project paths (`figures`).
 #' @param panels Table of the panels, as `HISTOGRAM_SETTINGS`.
@@ -117,7 +117,7 @@ save_protein_histograms <- function(figure, domains, paths) {
 #' The files are named <figure><panel>_protein_null-fit_<domain>_<criterion>.pdf
 #' (panel A: C1, panel B: C2).
 #'
-#' @param figure Figure of the paper (for example "WebFigS7").
+#' @param figure Figure of the paper (for example "FigS7").
 #' @param paths Project paths (`data`, `figures`).
 #' @param domains Domain of each figure, as `NULL_FIT_DOMAINS`.
 #' @return NULL, invisibly.

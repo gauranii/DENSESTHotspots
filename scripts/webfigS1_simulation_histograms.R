@@ -8,11 +8,11 @@
 #          geometric signal, null counts over non-null counts (black): ZIGP
 #          (A, B) and ZIP (C) null counts.
 # Inputs:  None (simulated data, seed 889191 + 111).
-# Outputs: figures/WebFigS1{A,B,C}_simulation_histogram_{ZIGP5,ZIGP6,ZIP3}-geometric.pdf
+# Outputs: figures/FigS1{A,B,C}_simulation_histogram_{ZIGP5,ZIGP6,ZIP3}-geometric.pdf
 # Usage:   Rscript scripts/webfigS1_simulation_histograms.R
 # Source:  PLOTS.R of 30 June 2016 (data5, data6, data7).
 # -----------------------------------------------------------------------------
 
 source("R/setup.R")
 
-save_simulation_histograms("WebFigS1", PAPER, PATHS)
+save_simulation_histograms("FigS1", PAPER, PATHS)

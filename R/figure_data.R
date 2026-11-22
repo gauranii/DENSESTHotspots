@@ -39,24 +39,24 @@ HISTOGRAM_SETTINGS <- read.table(header = TRUE, stringsAsFactors = FALSE, text =
   Fig1      D     ZIP2   bar6     binomial  -40 6        non_null 0.35 0.20 0.4 1.5    0
   Fig1      E     ZIGP3  bar4     binomial  -40 6        non_null 0.35 0.20 0.4 1      0.30
   Fig1      F     ZIGP4  bar5     binomial  -40 6        non_null 0.35 0.20 0.4 4      0.30
-  WebFigS1  A     ZIGP5  data5    geometric 0   0        non_null 0.85 0.08 0.4 1      0.15
-  WebFigS1  B     ZIGP6  data6    geometric 0   0        non_null 0.85 0.08 0.4 3      0.15
-  WebFigS1  C     ZIP3   data7    geometric 0   0        non_null 0.85 0.08 0.4 1.5    0
-  WebFigS2  A     ZIGP7  bar1     binomial  -40 6        non_null 0.80 0.20 0.4 1      0.20
-  WebFigS2  B     ZIGP8  bar2     binomial  -40 6        non_null 0.80 0.20 0.4 3      0.20
-  WebFigS2  C     ZIP4   bar3     binomial  -40 6        non_null 0.80 0.20 0.4 1.5    0
-  WebFigS3  A     MZIGP1 mixed1   geometric -5  0        null     0.80 0.08 0.8 1.5    0.30
-  WebFigS3  B     MZIGP2 mixed2   geometric -5  0        null     0.80 0.08 0.8 3      0.30
-  WebFigS3  C     MZIP1  mixed3   geometric -5  0        null     0.80 0.08 0.8 1.5    0
-  WebFigS4  A     MZIGP3 mixed4   binomial  -40 0        null     0.35 0.20 0.4 1      0.30
-  WebFigS4  B     MZIGP4 mixed5   binomial  -40 0        null     0.35 0.20 0.4 4      0.30
-  WebFigS4  C     MZIP2  mixed6   binomial  -40 0        null     0.35 0.20 0.4 1.5    0
-  WebFigS5  A     MZIGP5 mixed7   geometric -5  0        null     0.85 0.08 0.4 1      0.15
-  WebFigS5  B     MZIGP6 mixed8   geometric -5  0        null     0.85 0.08 0.4 3      0.15
-  WebFigS5  C     MZIP3  mixed9   geometric -5  0        null     0.85 0.08 0.4 1.5    0
-  WebFigS6  A     MZIGP7 mixed10  binomial  -40 0        null     0.80 0.20 0.4 1      0.20
-  WebFigS6  B     MZIGP8 mixed11  binomial  -40 0        null     0.80 0.20 0.4 3      0.20
-  WebFigS6  C     MZIP4  mixed12  binomial  -40 0        null     0.80 0.20 0.4 1.5    0
+  FigS1     A     ZIGP5  data5    geometric 0   0        non_null 0.85 0.08 0.4 1      0.15
+  FigS1     B     ZIGP6  data6    geometric 0   0        non_null 0.85 0.08 0.4 3      0.15
+  FigS1     C     ZIP3   data7    geometric 0   0        non_null 0.85 0.08 0.4 1.5    0
+  FigS2     A     ZIGP7  bar1     binomial  -40 6        non_null 0.80 0.20 0.4 1      0.20
+  FigS2     B     ZIGP8  bar2     binomial  -40 6        non_null 0.80 0.20 0.4 3      0.20
+  FigS2     C     ZIP4   bar3     binomial  -40 6        non_null 0.80 0.20 0.4 1.5    0
+  FigS3     A     MZIGP1 mixed1   geometric -5  0        null     0.80 0.08 0.8 1.5    0.30
+  FigS3     B     MZIGP2 mixed2   geometric -5  0        null     0.80 0.08 0.8 3      0.30
+  FigS3     C     MZIP1  mixed3   geometric -5  0        null     0.80 0.08 0.8 1.5    0
+  FigS4     A     MZIGP3 mixed4   binomial  -40 0        null     0.35 0.20 0.4 1      0.30
+  FigS4     B     MZIGP4 mixed5   binomial  -40 0        null     0.35 0.20 0.4 4      0.30
+  FigS4     C     MZIP2  mixed6   binomial  -40 0        null     0.35 0.20 0.4 1.5    0
+  FigS5     A     MZIGP5 mixed7   geometric -5  0        null     0.85 0.08 0.4 1      0.15
+  FigS5     B     MZIGP6 mixed8   geometric -5  0        null     0.85 0.08 0.4 3      0.15
+  FigS5     C     MZIP3  mixed9   geometric -5  0        null     0.85 0.08 0.4 1.5    0
+  FigS6     A     MZIGP7 mixed10  binomial  -40 0        null     0.80 0.20 0.4 1      0.20
+  FigS6     B     MZIGP8 mixed11  binomial  -40 0        null     0.80 0.20 0.4 3      0.20
+  FigS6     C     MZIP4  mixed12  binomial  -40 0        null     0.80 0.20 0.4 1.5    0
 ")
 
 # Protein domains of Figure 2, in the order of the panels.
@@ -163,8 +163,8 @@ protein_counts <- function(domain, data_file) {
 
 # Protein domains of Web Figures S7 to S12, one figure per domain; panel A
 # uses the cutoff criterion C1, panel B the criterion C2.
-NULL_FIT_DOMAINS <- c(WebFigS7 = "cd00031", WebFigS8 = "cd00054", WebFigS9 = "cd00180",
-                      WebFigS10 = "cd00204", WebFigS11 = "cd00882", WebFigS12 = "pfam00001")
+NULL_FIT_DOMAINS <- c(FigS7 = "cd00031", FigS8 = "cd00054", FigS9 = "cd00180",
+                      FigS10 = "cd00204", FigS11 = "cd00882", FigS12 = "pfam00001")
 
 #' Observed and fitted null probabilities of a protein domain.
 #'
