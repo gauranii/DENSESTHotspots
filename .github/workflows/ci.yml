@@ -7,8 +7,9 @@
 # Purpose: Continuous integration: run `nix flake check` on every push and
 #          pull request. The check builds every table and figure that needs
 #          no private data with the default settings, compares them with the
-#          paper, and runs the unit tests (README.md). The protein domain
-#          counts are not in the repository; their outputs are skipped.
+#          paper and R with Python, and runs the unit tests (docs/DETAILS.md).
+#          The protein domain counts are not in the repository; their outputs
+#          are skipped.
 # -----------------------------------------------------------------------------
 name: CI
 
