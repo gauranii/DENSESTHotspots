@@ -104,7 +104,8 @@ def generate_zigp(n, mu, phi, omega, seed=None):
 
 @njit(cache=True, error_model="numpy")
 def _gp_pmf(x, lam, theta):
-    return _exp(_log(lam) + (x - 1.0) * _log(lam + theta * x) - _lgammafn(x + 1.0) - lam - theta * x)
+    return _exp(_log(lam) + (x - 1.0) * _log(lam + theta * x) - _lgammafn(x + 1.0) - lam
+                - theta * x)
 
 
 @njit(cache=True, error_model="numpy")

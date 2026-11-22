@@ -9,7 +9,7 @@
 # Outputs: figures/Fig2{A,...,F}_protein_histogram_<domain>.pdf, domains cd00031,
 #          cd00180, cd00204, cd00882, cd00054, pfam00001
 # Usage:   python python/scripts/fig2_protein_histograms.py
-#          Options and outputs as scripts/fig2_protein_histograms.R, which this file follows;
+#          Options and outputs as in the R script of the same name;
 #          --help prints this header.
 # Source:  scripts/fig2_protein_histograms.R.
 # -----------------------------------------------------------------------------

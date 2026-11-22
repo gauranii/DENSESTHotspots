@@ -122,7 +122,8 @@ def parse_args(defaults, args=None):
         if name not in opts:
             raise SystemExit(f"Error: unknown argument --{name}")
         if is_flag != isinstance(opts[name], bool):
-            raise SystemExit(f"Error: --{name} " + ("needs a value" if is_flag else "takes no value"))
+            problem = "needs a value" if is_flag else "takes no value"
+            raise SystemExit(f"Error: --{name} {problem}")
         if is_flag:
             opts[name] = True
         elif isinstance(opts[name], int):

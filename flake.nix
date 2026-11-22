@@ -144,6 +144,7 @@
         unit-python = pkgs.runCommand "zinull-unit-python" { nativeBuildInputs = [ (pyEnv pkgs) ]; } ''
           export HOME=$TMPDIR NUMBA_CACHE_DIR=$TMPDIR PYTHONDONTWRITEBYTECODE=1
           export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+          set -o pipefail
           cd ${self}
           python -m pytest -p no:cacheprovider python/tests | tee $TMPDIR/unit-python.txt
           cp $TMPDIR/unit-python.txt $out

@@ -13,7 +13,7 @@
 # Usage:   python python/scripts/webtableS7_simulation_binomial.py [--rerun] [--runs=1000] [--cores=4]
 #          --rerun: run the replications here instead of reading the archive.
 #          --runs: N (runs 1 to N), a:b or a comma list; finished runs are kept.
-#          Options and outputs as scripts/webtableS7_simulation_binomial.R, which this file follows;
+#          Options and outputs as in the R script of the same name;
 #          --help prints this header.
 # Source:  scripts/webtableS7_simulation_binomial.R.
 # -----------------------------------------------------------------------------

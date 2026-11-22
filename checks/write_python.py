@@ -43,7 +43,8 @@ def name_of(output):
     names = []
     for part in output.split("+"):
         web, kind, number = re.fullmatch(r"(web)?(table|fig)(S?\d+)", part).groups()
-        names.append(("Web " if web else "") + ("Table " if kind == "table" else "Figure ") + number)
+        kind = "Table " if kind == "table" else "Figure "
+        names.append(("Web " if web else "") + kind + number)
     return ", ".join(names)
 
 
@@ -52,9 +53,16 @@ def section(file):
         rows = list(csv.DictReader(f))
     mode = rows[0]["mode"]
     built = [row for row in rows if not row["verdict"].startswith("skipped")]
-    identical = sum(row["verdict"] == "identical" for row in built)
+    tables = [row for row in built if row["verdict"] in ("identical", "DIFFERENT")
+              and not row["max_abs_diff"].endswith("pt")]
+    figures = [row for row in built if row not in tables]
     cores = next((row["cores"] for row in built if row["cores"]), "")
-    summary = f"{identical} of {len(built)} outputs identical in every value ({cores} cores)."
+    summary = (f"{sum(row['verdict'] == 'identical' for row in tables)} of {len(tables)} outputs "
+               "in csv files identical in every cell")
+    if figures:
+        summary += (f"; {sum(row['verdict'] == 'same marks' for row in figures)} of "
+                    f"{len(figures)} figures with the same marks")
+    summary += f" ({cores} cores)."
     if len(built) < len(rows):
         summary += (f" {len(rows) - len(built)} outputs of the protein domain data were "
                     "skipped: the data file was not there.")

@@ -8,7 +8,7 @@
 # Inputs:  data/realdata.txt.
 # Outputs: results/Table3_protein_rejections.csv.
 # Usage:   python python/scripts/table3_protein_rejections.py
-#          Options and outputs as scripts/table3_protein_rejections.R, which this file follows;
+#          Options and outputs as in the R script of the same name;
 #          --help prints this header.
 # Source:  scripts/table3_protein_rejections.R.
 # -----------------------------------------------------------------------------

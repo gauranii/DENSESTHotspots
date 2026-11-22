@@ -10,7 +10,7 @@
 # Inputs:  None (simulated data, seed 889191 + 111).
 # Outputs: figures/FigS6{A,B,C}_simulation_histogram_{MZIGP7,MZIGP8,MZIP4}-binomial.pdf
 # Usage:   python python/scripts/webfigS6_simulation_histograms.py
-#          Options and outputs as scripts/webfigS6_simulation_histograms.R, which this file follows;
+#          Options and outputs as in the R script of the same name;
 #          --help prints this header.
 # Source:  scripts/webfigS6_simulation_histograms.R.
 # -----------------------------------------------------------------------------

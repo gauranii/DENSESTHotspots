@@ -15,8 +15,9 @@
 # Outputs: the comparison csv, one row per output of the paper (archive) or
 #          per group of settings and true cutoff (rerun): files, cells and
 #          marks compared, how many are not identical, the largest
-#          difference, the verdict and the run times. Prints the same; exit
-#          status 1 unless every output that was built is identical.
+#          difference, the verdict ("identical" for csv files, "same marks"
+#          for figures, "DIFFERENT", or "skipped (no data)") and the run
+#          times. Prints the same; exit status 1 if an output is different.
 #          Tolerance: none for the csv files (the same header, the same rows,
 #          every cell the same text; the files are also compared byte for
 #          byte). The marks of a figure must correspond one to one, with the
@@ -37,6 +38,11 @@ from figure_compare import POSITION_TOLERANCE, r_vs_python_bars, r_vs_python_poi
 
 mode, r_dir, py_dir, out_file = sys.argv[1:5]
 runs = sys.argv[5] if len(sys.argv) > 5 else "1:2"
+
+
+# Verdict of an output without a difference: every cell of its csv files is
+# the same text, or the marks of its figures correspond within the tolerance.
+SAME = {"csv": "identical", "figures": "same marks"}
 
 
 def scripts():
@@ -227,8 +233,9 @@ for output, script_names, tables, figures, kind, source in (
             total.problem("no files to compare")
         row = {"files": total.files, "values": total.values, "not_identical": total.unequal,
                "max_abs_diff": f"{total.max_abs:.3g}" + (" pt" if figures else ""),
-               "verdict": "DIFFERENT" if total.problems else "identical",
-               "r_seconds": r_time[0] if r_time else "", "python_seconds": py_time[0] if py_time else "",
+               "verdict": "DIFFERENT" if total.problems else SAME["figures" if figures else "csv"],
+               "r_seconds": r_time[0] if r_time else "",
+               "python_seconds": py_time[0] if py_time else "",
                "cores": (r_time or py_time)[1],
                "problems": "; ".join(sorted(set(total.problems))[:5])}
     rows.append({"output": output, "mode": mode, "source": source, **row})

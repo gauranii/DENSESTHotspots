@@ -10,7 +10,7 @@
 # Inputs:  None (simulated data, seed 889191 + 111).
 # Outputs: figures/FigS3{A,B,C}_simulation_histogram_{MZIGP1,MZIGP2,MZIP1}-geometric.pdf
 # Usage:   python python/scripts/webfigS3_simulation_histograms.py
-#          Options and outputs as scripts/webfigS3_simulation_histograms.R, which this file follows;
+#          Options and outputs as in the R script of the same name;
 #          --help prints this header.
 # Source:  scripts/webfigS3_simulation_histograms.R.
 # -----------------------------------------------------------------------------

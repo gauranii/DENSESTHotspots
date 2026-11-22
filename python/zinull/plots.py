@@ -158,7 +158,7 @@ def draw_null_fit(series):
     axes.tick_params(colors="#4D4D4D", labelsize=9, length=2.75, width=1.07)
     axes.set_xlabel("C", fontsize=11)
     axes.set_ylabel("estimated probabilities", fontsize=11)
-    axes.yaxis.set_label_coords(-0.085, 0.5)
+    axes.yaxis.set_label_coords(-0.068, 0.5)
     axes.legend(title="fEstimation", loc="center left", bbox_to_anchor=(1.02, 0.5), frameon=False,
                 fontsize=9, title_fontsize=11, numpoints=1, alignment="left")
     return figure

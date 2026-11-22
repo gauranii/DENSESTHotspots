@@ -62,7 +62,8 @@ def test_parse_args():
 
 def test_show_help(tmp_path, capsys):
     script = tmp_path / "script.py"
-    script.write_text("# -----\n# File:    script.py\n# Usage:   python script.py\n# -----\nx = 1\n")
+    script.write_text("# -----\n# File:    script.py\n# Usage:   python script.py\n"
+                      "# -----\nx = 1\n")
     assert setup.show_help([], str(script)) is None
     with pytest.raises(SystemExit) as stop:
         setup.show_help(["--help"], str(script))

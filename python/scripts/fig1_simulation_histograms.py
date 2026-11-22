@@ -12,7 +12,7 @@
 # Outputs: figures/Fig1{A,B,C}_simulation_histogram_{ZIP1,ZIGP1,ZIGP2}-geometric.pdf,
 #          figures/Fig1{D,E,F}_simulation_histogram_{ZIP2,ZIGP3,ZIGP4}-binomial.pdf
 # Usage:   python python/scripts/fig1_simulation_histograms.py
-#          Options and outputs as scripts/fig1_simulation_histograms.R, which this file follows;
+#          Options and outputs as in the R script of the same name;
 #          --help prints this header.
 # Source:  scripts/fig1_simulation_histograms.R.
 # -----------------------------------------------------------------------------

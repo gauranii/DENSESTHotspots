@@ -28,7 +28,7 @@ import math
 import numpy as np
 from numba import njit
 
-from .rmath import DBL_MAX, M_1_SQRT_2PI, M_LN2, _pow_di, muladd
+from .rmath import M_1_SQRT_2PI, _pow_di, muladd
 
 N = 624  # words of the Mersenne-Twister state
 M = 397

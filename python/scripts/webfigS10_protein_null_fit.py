@@ -10,7 +10,7 @@
 # Inputs:  data/realdata.txt
 # Outputs: figures/FigS10{A,B}_protein_null-fit_cd00204_{C1,C2}.pdf
 # Usage:   python python/scripts/webfigS10_protein_null_fit.py
-#          Options and outputs as scripts/webfigS10_protein_null_fit.R, which this file follows;
+#          Options and outputs as in the R script of the same name;
 #          --help prints this header.
 # Source:  scripts/webfigS10_protein_null_fit.R.
 # -----------------------------------------------------------------------------
