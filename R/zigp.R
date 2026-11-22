@@ -22,9 +22,12 @@
 #' @param mu Mean parameter of the generalized Poisson part (lambda / (1 - theta)).
 #' @param phi Dispersion parameter (1 / (1 - theta)).
 #' @param omega Zero-inflation probability (eta), in [0, 1].
+#' @param seed Seed set before the uniforms are drawn; NULL (the default)
+#'   goes on from the current state of the random number generator.
 #' @return Numeric vector of `n` counts.
-generate_zigp <- function(n, mu, phi, omega) {
+generate_zigp <- function(n, mu, phi, omega, seed = NULL) {
   if (omega < 0 || omega > 1) stop("omega has to be in [0, 1]")
+  if (!is.null(seed)) set.seed(seed)
   x <- double(n)
   u <- runif(n, 0, 1)
   upper <- max(u)

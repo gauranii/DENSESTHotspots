@@ -107,9 +107,11 @@ simulate_mixture <- function(n, draw_signal, offset, min_kept, pi0, eta, lambda,
 #'
 #' @param p Success probability of the geometric signal.
 #' @param ... Other arguments of `simulate_mixture()`.
+#' @param seed Seed of the random numbers, set by `simulate_mixture()` before
+#'   the first draw.
 #' @return Data frame with columns `count` and `non_null`.
-simulate_geometric_mixture <- function(p, ...) {
-  simulate_mixture(draw_signal = function() rgeom(1, prob = p), ...)
+simulate_geometric_mixture <- function(p, ..., seed) {
+  simulate_mixture(draw_signal = function() rgeom(1, prob = p), ..., seed = seed)
 }
 
 #' Mixture whose non-null counts carry a binomial signal.
@@ -117,9 +119,11 @@ simulate_geometric_mixture <- function(p, ...) {
 #' @param p Success probability of the binomial signal.
 #' @param size Number of trials of the binomial signal.
 #' @param ... Other arguments of `simulate_mixture()`.
+#' @param seed Seed of the random numbers, set by `simulate_mixture()` before
+#'   the first draw.
 #' @return Data frame with columns `count` and `non_null`.
-simulate_binomial_mixture <- function(p, size = BINOMIAL_SIZE, ...) {
-  simulate_mixture(draw_signal = function() rbinom(1, size = size, prob = p), ...)
+simulate_binomial_mixture <- function(p, size = BINOMIAL_SIZE, ..., seed) {
+  simulate_mixture(draw_signal = function() rbinom(1, size = size, prob = p), ..., seed = seed)
 }
 
 #' Simulate the data set of one panel.
