@@ -22,6 +22,20 @@
           packages = with pkgs.rPackages; [ ggplot2 ];
         };
 
+      # Python with the packages of python/zinull; numba compiles the random
+      # number generator and the loops that follow R's order of operations.
+      pyEnv =
+        pkgs:
+        pkgs.python3.withPackages (
+          ps: with ps; [
+            numpy
+            pandas
+            matplotlib
+            numba
+            pytest
+          ]
+        );
+
       # One command per table and figure of the paper (filled in below).
       scripts = import ./scripts.nix;
 
@@ -48,23 +62,49 @@
         program = "${runner pkgs name names}";
         meta.description = "Build ${name} of the paper";
       };
+
+      # The same commands with the Python scripts, as py-<name>.
+      pyRunner =
+        pkgs: name: names:
+        pkgs.writeShellScript "zinull-py-${name}" ''
+          set -euo pipefail
+          export ZINULL_OUTPUT="''${ZINULL_OUTPUT:-$PWD}"
+          export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+          if [ -z "''${ZINULL_DATA:-}" ] && [ -f "$PWD/data/realdata.txt" ]; then
+            export ZINULL_DATA="$PWD/data/realdata.txt"
+          fi
+          export NUMBA_CACHE_DIR="''${NUMBA_CACHE_DIR:-''${TMPDIR:-/tmp}/zinull-numba}"
+          export PYTHONDONTWRITEBYTECODE=1
+          cd ${self}
+          for script in ${lib.concatStringsSep " " names}; do
+            ${pyEnv pkgs}/bin/python "python/scripts/$script.py" "$@"
+          done
+        '';
+      pyApp = pkgs: name: names: {
+        type = "app";
+        program = "${pyRunner pkgs name names}";
+        meta.description = "Build ${name} of the paper with the Python scripts";
+      };
     in
     {
       devShells = forEachSystem (pkgs: {
         default = pkgs.mkShell {
           packages = [
             (rEnv pkgs)
-            pkgs.python3
+            (pyEnv pkgs)
           ];
           OPENBLAS_NUM_THREADS = 1;
+          VECLIB_MAXIMUM_THREADS = 1;
         };
       });
 
       apps = forEachSystem (
         pkgs:
         lib.mapAttrs (name: script: app pkgs name [ script ]) scripts
+        // lib.mapAttrs' (name: script: lib.nameValuePair "py-${name}" (pyApp pkgs name [ script ])) scripts
         // {
           all = app pkgs "all" (lib.attrValues scripts);
+          py-all = pyApp pkgs "all" (lib.attrValues scripts);
           versions = {
             type = "app";
             program = "${pkgs.writeShellScript "zinull-versions" ''
@@ -96,6 +136,37 @@
               bash checks/run_checks.sh $TMPDIR/RESULTS.md || test -s $TMPDIR/RESULTS.md
               bash checks/versions.sh --check
               cp $TMPDIR/RESULTS.md $out
+            '';
+
+        # The unit tests of every function in python/zinull/ (pytest,
+        # python/tests/); the values of R they compare with are stored in
+        # python/tests/r_values.json.
+        unit-python = pkgs.runCommand "zinull-unit-python" { nativeBuildInputs = [ (pyEnv pkgs) ]; } ''
+          export HOME=$TMPDIR NUMBA_CACHE_DIR=$TMPDIR PYTHONDONTWRITEBYTECODE=1
+          export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1
+          cd ${self}
+          python -m pytest -p no:cacheprovider python/tests | tee $TMPDIR/unit-python.txt
+          cp $TMPDIR/unit-python.txt $out
+        '';
+
+        # Build every table and figure with the R and with the Python
+        # scripts and compare the two; the result is the comparison
+        # (checks/PYTHON.md, with the stored comparison of the reruns).
+        python =
+          pkgs.runCommand "zinull-python"
+            {
+              nativeBuildInputs = [
+                (rEnv pkgs)
+                (pyEnv pkgs)
+              ];
+            }
+            ''
+              export HOME=$TMPDIR NUMBA_CACHE_DIR=$TMPDIR PYTHONDONTWRITEBYTECODE=1
+              export OPENBLAS_NUM_THREADS=1 VECLIB_MAXIMUM_THREADS=1 CORES=4
+              cd ${self}
+              bash checks/check_python.sh archive $TMPDIR/work $TMPDIR/PYTHON.md $TMPDIR \
+                || { cat $TMPDIR/PYTHON.md; exit 1; }
+              cp $TMPDIR/PYTHON.md $out
             '';
       });
 

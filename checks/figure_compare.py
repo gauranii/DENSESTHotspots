@@ -9,6 +9,10 @@
 #            proportional.
 #          - points_vs_points: point glyphs of a point-and-line plot, series
 #            by series, after one affine map per axis.
+#          - r_vs_python_bars, r_vs_python_points: a figure drawn by R against
+#            the same figure drawn by matplotlib (python/zinull/plots.py):
+#            the same marks one to one, in the same order and colours, at
+#            the same places after one affine map per axis.
 # -----------------------------------------------------------------------------
 from collections import Counter
 
@@ -160,3 +164,125 @@ def points_vs_points(pdf_a, pdf_b):
     leftover = max(_fit([p[0] for p in pb], [p[0] for p in pa])[2],
                    _fit([p[1] for p in pb], [p[1] for p in pa])[2])
     return counts, leftover
+
+
+# ----- R against matplotlib -----
+
+POSITION_TOLERANCE = 0.02  # pt of the R page; R prints its coordinates with two decimals
+COLOUR_TOLERANCE = 0.002   # of a colour channel in [0, 1]; R prints three decimals
+GLYPH_TO_VERTEX = 0.1      # pt between a point glyph of R and the line vertex under it
+
+
+def _rgb(colour):
+    return tuple(float(v) for v in colour.split())
+
+
+def _same_colour(a, b):
+    return max(abs(x - y) for x, y in zip(_rgb(a), _rgb(b))) <= COLOUR_TOLERANCE
+
+
+def r_bars(pdf):
+    """Bars of an R barplot in drawing order: [(left, width, height, fill,
+    border)]; the filled rectangles on the common baseline."""
+    rects = [r for r in marks(pdf)['rects'] if r[4] is not None]
+    if not rects:
+        return []
+    baseline = Counter(r[1] for r in rects).most_common(1)[0][0]
+    return [(x, w, h, fill, stroke) for x, y, w, h, fill, stroke in rects if y == baseline]
+
+
+def python_bars(pdf):
+    """Bars of a matplotlib bar plot in drawing order, as `r_bars()`: the
+    closed four-cornered paths that are filled and stroked."""
+    bars = []
+    for p in marks(pdf)['paths']:
+        if p['closed'] and len(p['points']) == 4 and p['fill'] and p['stroke'] and not p['curves']:
+            xs, ys = [q[0] for q in p['points']], [q[1] for q in p['points']]
+            bars.append((min(xs), max(xs) - min(xs), max(ys) - min(ys), p['fill'], p['stroke']))
+    return bars
+
+
+def r_vs_python_bars(r_pdf, py_pdf):
+    """Bars of a histogram drawn by R and by matplotlib. Returns (bars in
+    the R file, bars in the Python file, numbers compared, largest leftover
+    in pt of the R page). The leftover is None when the bars do not
+    correspond: another number, or a bar with another fill or border. Left
+    and right ends are compared after one affine map, heights after one
+    scale (heights must be proportional)."""
+    r, py = r_bars(r_pdf), python_bars(py_pdf)
+    if len(r) != len(py) or not r:
+        return len(r), len(py), 0, None
+    if not all(_same_colour(a[3], b[3]) and _same_colour(a[4], b[4]) for a, b in zip(r, py)):
+        return len(r), len(py), 0, None
+    ends = _fit([b[0] for b in py] + [b[0] + b[1] for b in py],
+                [a[0] for a in r] + [a[0] + a[1] for a in r])[2]
+    ha, hb = [a[2] for a in r], [b[2] for b in py]
+    sbb = sum(h * h for h in hb)
+    scale = sum(x * y for x, y in zip(ha, hb)) / sbb if sbb else 0.0
+    heights = max(abs(x - scale * y) for x, y in zip(ha, hb))
+    return len(r), len(py), 3 * len(r), max(ends, heights)
+
+
+def _polylines(mk):
+    """Stroked open paths of straight segments, not filled."""
+    return [p['points'] for p in mk['paths']
+            if p['stroke'] and not p['fill'] and not p['closed'] and not p['curves']]
+
+
+def _distance(a, b):
+    return max(max(abs(p[0] - q[0]), abs(p[1] - q[1])) for p, q in zip(a, b))
+
+
+def r_point_lines(pdf):
+    """Series of an R (ggplot2) point-and-line plot, in the order of their
+    names: [(name, glyph centres ordered by x, vertices of the line through
+    them)]; the line is None when no stroked path runs through the points."""
+    lines = _polylines(marks(pdf))
+    series = []
+    for name, points in sorted(point_series(pdf).items()):
+        through = [line for line in lines
+                   if len(line) == len(points) and _distance(line, points) < GLYPH_TO_VERTEX]
+        series.append((name, points, through[0] if through else None))
+    return series
+
+
+def python_point_lines(pdf):
+    """Series of a matplotlib point-and-line plot in drawing order: [(marker
+    name, marker centres, vertices of the line through them)]. A series is a
+    marker form stamped at every vertex of one stroked line; the stamp in the
+    legend lies on no vertex and is left out."""
+    mk = marks(pdf)
+    lines = _polylines(mk)
+    stamps = {}
+    for name, x, y in mk['stamps']:
+        stamps.setdefault(name, []).append((x, y))
+    series = []
+    for name, points in stamps.items():
+        through = [line for line in lines
+                   if len(line) <= len(points) and _distance(line, points) < 1e-3]
+        line = max(through, key=len) if through else None
+        series.append((name, points[:len(line)] if line else points, line))
+    return series
+
+
+def r_vs_python_points(r_pdf, py_pdf):
+    """Points and lines of a null-fit plot drawn by R and by matplotlib.
+    Returns ([(series, points in R, points in Python)], numbers compared,
+    largest leftover in pt of the R page after one affine map per axis). The
+    leftover is None when the marks do not correspond: another number of
+    series, of points in a series, or a series without its line. The series
+    of R are taken in the order of their names, as matplotlib draws them."""
+    r, py = r_point_lines(r_pdf), python_point_lines(py_pdf)
+    counts = [(r[i][0] if i < len(r) else py[i][0], len(r[i][1]) if i < len(r) else 0,
+               len(py[i][1]) if i < len(py) else 0) for i in range(max(len(r), len(py)))]
+    if not r or len(r) != len(py) or any(a != b for _, a, b in counts):
+        return counts, 0, None
+    if any(line is None for _, _, line in r + py):
+        return counts, 0, None
+    leftover = 0.0
+    for part in (1, 2):  # glyph centres, then line vertices
+        a = [p for s in r for p in s[part]]
+        b = [p for s in py for p in s[part]]
+        for axis in (0, 1):
+            leftover = max(leftover, _fit([p[axis] for p in b], [p[axis] for p in a])[2])
+    return counts, 4 * sum(n for _, n, _ in counts), leftover

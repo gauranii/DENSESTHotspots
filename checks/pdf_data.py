@@ -3,7 +3,10 @@
 # Paper:   Gauran, Park, Lim, Park, Zylstra, Peterson, Kann, Spouge (2018).
 #          Biometrics 74:458-471.
 # Purpose: Read the marks drawn in an R pdf() file (rectangles, paths, text)
-#          so a figure can be compared with another by its data.
+#          so a figure can be compared with another by its data. Also reads
+#          the PDF files matplotlib writes without compression (the figures
+#          of python/zinull/plots.py), whose point markers are stamps of a
+#          form drawn once.
 #          Standard library only.
 # Usage:   python3 checks/pdf_data.py figure.pdf   (prints a summary)
 # -----------------------------------------------------------------------------
@@ -19,12 +22,13 @@ PAINT = {'S': (False, True), 's': (False, True), 'f': (True, False), 'F': (True,
 
 
 def content(path):
-    """Concatenated, decompressed page content streams of an R pdf file."""
+    """Concatenated, decompressed page content streams of an R pdf file (or
+    of a matplotlib one; the forms of its point markers are left out)."""
     raw = open(path, 'rb').read()
     parts = []
     for m in re.finditer(rb'<<([^<>]*)>>\s*stream\r?\n', raw):
-        if b'/Alternate' in m.group(1) or b'/FontFile' in m.group(1):
-            continue  # colour profile or font, not page content
+        if b'/Alternate' in m.group(1) or b'/FontFile' in m.group(1) or b'/Form' in m.group(1):
+            continue  # colour profile, font or marker form, not page content
         body = raw[m.end():raw.index(b'endstream', m.end())]
         if b'/FlateDecode' in m.group(1):
             body = zlib.decompressobj().decompress(body)
@@ -39,9 +43,11 @@ def marks(path):
     'paths' [{'points': [(x, y)], 'curves': n, 'closed': bool, 'fill': colour,
               'stroke': colour}]: every other painted path.
     'clips' [(x, y, w, h)]: rectangles used as clipping regions.
-    'texts' [(x, y, size, string, font, rotated)]."""
-    rects, paths, clips, texts = [], [], [], []
-    state = {'fill': '0 0 0', 'stroke': '0 0 0'}
+    'texts' [(x, y, size, string, font, rotated)].
+    'stamps' [(name, x, y)]: forms drawn at a point (the point markers of a
+            matplotlib figure; none in an R figure)."""
+    rects, paths, clips, texts, stamps = [], [], [], [], []
+    state = {'fill': '0 0 0', 'stroke': '0 0 0', 'origin': (0.0, 0.0)}
     saved, stack = [], []
     points, curves, closed, rect = [], 0, False, None
     font, tm = None, (1, 0, 0, 1, 0, 0)
@@ -89,6 +95,10 @@ def marks(path):
                               'closed': closed or token in ('s', 'b', 'b*'),
                               'fill': fill, 'stroke': stroke})
             points, curves, closed, rect = [], 0, False, None
+        elif token == 'cm' and len(numbers) >= 6:  # a shift of the origin
+            state['origin'] = (state['origin'][0] + numbers[-2], state['origin'][1] + numbers[-1])
+        elif token == 'Do' and stack:
+            stamps.append((stack[-1],) + state['origin'])
         elif token == 'Tf' and stack:
             font = stack[0]
         elif token == 'Tm' and len(numbers) >= 6:
@@ -98,7 +108,7 @@ def marks(path):
             string = re.sub(r'\\(.)', r'\1', stack[-1][1:-1])
             texts.append((tm[4], tm[5], size, string, font, abs(tm[1]) > abs(tm[0])))
         stack = []
-    return {'rects': rects, 'paths': paths, 'clips': clips, 'texts': texts}
+    return {'rects': rects, 'paths': paths, 'clips': clips, 'texts': texts, 'stamps': stamps}
 
 
 if __name__ == '__main__':
