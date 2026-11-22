@@ -1,4 +1,4 @@
-# EmpiricalNullZIGP: Empirical Null Estimation with Zero-Inflated Discrete Mixtures
+# EBayesCountFDR: Empirical Null Estimation with Zero-Inflated Discrete Mixtures
 
 Code for
 
