@@ -148,7 +148,8 @@ and figure.
 - **Stored replications** (`archive/simulation/<setting>_C<C>.csv.gz`): for
   every replication, cutoff criterion and null model, the number of
   rejections R, the FDR and the TPR of the three procedures, the estimates
-  and their bias. Numbers are written with 17 significant digits and read
+  and their bias. The FDR of a replication without rejections is NaN, and
+  the tables average the FDR over the replications with rejections. Numbers are written with 17 significant digits and read
   back exactly. ZIP1 to ZIGP8 are the 12 settings of the paper; the tables
   of the contaminated null (C = 1) label them MZIP1 to MZIGP8.
 - **Published figures** (`archive/figures/`): the figure files of the

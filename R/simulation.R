@@ -224,8 +224,9 @@ stored_replications <- function(group, C, opts, settings, paths) {
 
 #' Mean and standard deviation over replications, per criterion and model.
 #'
-#' Missing values are left out (the FDR of Storey's
-#' procedure is NaN in a replication without rejections).
+#' Missing values are left out (the FDR is NaN in a replication without
+#' rejections). An FDR cell with no value (no replication with rejections,
+#' or the standard deviation of a single one) is 0.
 #'
 #' @param runs Replications of one setting, sorted by `run`.
 #' @param setting Name of the setting.
@@ -243,6 +244,8 @@ summarize_runs <- function(runs, setting, columns) {
       if (all(is.na(v))) NA_real_ else statistics[[cells$statistic[i]]](v, na.rm = TRUE)
     }, numeric(1))
   }, numeric(length(columns))))
+  fdr <- grepl("_FDR$", colnames(values))
+  values[, fdr][is.na(values[, fdr])] <- 0
   data.frame(setting = setting, cells[c("cutoff", "model", "statistic")], values)
 }
 

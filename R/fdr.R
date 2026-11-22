@@ -135,20 +135,23 @@ storey_rejected <- function(p_values, frequency, pi0, level) {
 
 #' Number of rejections, FDR and TPR.
 #'
+#' The FDR of a replication without rejections is NaN, so that the mean
+#' over replications is taken over the replications with rejections.
+#'
 #' @param false,true Numbers of false and true discoveries.
 #' @param n_nonnull Number of non-null positions.
-#' @param empty FDR reported when nothing is rejected.
+#' @param R Number of rejections; by default `true + false`.
 #' @return c(R, FDR, TPR).
-discovery_rates <- function(false, true, n_nonnull, empty = 0) {
-  R <- true + false
-  c(R, if (R == 0) empty else false / R, true / n_nonnull)
+discovery_rates <- function(false, true, n_nonnull, R = true + false) {
+  c(R, if (R == 0) NaN else false / R, true / n_nonnull)
 }
 
 #' One-stage and two-stage procedures on data with labels.
 #'
-#' The one-stage false discoveries are counted above
-#' the cutoff C only, and the local FDR of the non-null counts at or above D
-#' uses the empirical probabilities of the smallest non-null counts.
+#' The one-stage R is the number of positions whose local FDR is below the
+#' level; its false discoveries are counted above the cutoff C only, and its
+#' true discoveries (for the TPR) use, for the non-null counts at or above
+#' D, the empirical probabilities of the smallest non-null counts.
 #'
 #' @param null,nonnull Sorted counts of the null and non-null positions.
 #' @param fit Null fit, a row of `select_null_fits()`.
@@ -168,8 +171,9 @@ local_fdr_rates <- function(null, nonnull, fit, level) {
     length(null) - length(which(null < fit$D))
   true_two <- true_lower + length(nonnull) - length(lower)
   false_one <- count_below(lfdr_null[which(null > fit$C)], level)
+  R_one <- count_below(local_fdr(all, inverse_frequency(all, all), fit), level)
   rates <- c(discovery_rates(false_two, true_two, length(nonnull)),
-             discovery_rates(false_one, true_lower + true_upper, length(nonnull)))
+             discovery_rates(false_one, true_lower + true_upper, length(nonnull), R = R_one))
   setNames(rates, paste0(rep(c("two_stage_", "one_stage_"), each = 3), c("R", "FDR", "TPR")))
 }
 
@@ -191,6 +195,6 @@ storey_rates <- function(null, nonnull, fit, level) {
   if (length(rejected) < 2) rejected <- integer(0)
   false <- sum(tabulate(match(null, distinct), length(distinct))[rejected])
   true <- sum(tabulate(match(nonnull, distinct), length(distinct))[rejected])
-  setNames(discovery_rates(false, true, length(nonnull), empty = NaN),
+  setNames(discovery_rates(false, true, length(nonnull)),
            paste0("storey_", c("R", "FDR", "TPR")))
 }
