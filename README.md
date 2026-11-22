@@ -1,4 +1,4 @@
-# DENSESTHotspots: Discrete Empirical Null for Sparse Estimation and Simultaneous Testing
+# DENSESTHotspots: Discrete Empirical Null for Sparse Estimation and Simultaneous Testing for Hotspots
 
 Code for
 
