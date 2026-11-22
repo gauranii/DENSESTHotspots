@@ -145,7 +145,9 @@ and figure.
   cd00054 (90), cd00180 (871), cd00204 (409), cd00882 (762) and pfam00001
   (430). Shorter columns are padded with NA. Used by Table 3, Web Table S16,
   Figure 2 and Web Figures S7 to S12.
-  The file is not included in this repository. With the file at
+  The file is not included in this repository; requests go to Maricel
+  Kann's laboratory (Department of Biological Sciences, University of
+  Maryland, Baltimore County). With the file at
   `data/realdata.txt` of the directory the command runs from (or its path
   in `ZINULL_DATA`), these outputs build as the others do; without it,
   their scripts stop with a message and the checks skip them.
