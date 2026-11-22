@@ -1,4 +1,4 @@
-# EBayesCountFDR: Empirical Null Estimation with Zero-Inflated Discrete Mixtures
+# DENSESTHotspots: Discrete Empirical Null for Sparse Estimation and Simultaneous Testing
 
 Code for
 

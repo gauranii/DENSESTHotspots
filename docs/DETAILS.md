@@ -1,4 +1,4 @@
-# EBayesCountFDR: Details
+# DENSESTHotspots: Details
 
 Everything beyond the overview in the [README](../README.md): the file layout, how to run and test the code, every output with its script, input and check, the data and the pinned software versions.
 
