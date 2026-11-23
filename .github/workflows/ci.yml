@@ -23,7 +23,9 @@ permissions:
 jobs:
   check:
     name: nix flake check
-    runs-on: ubuntu-latest
+    # Apple silicon: the Python code matches R double for double on arm64
+    # macOS, where R's long double is a double.
+    runs-on: macos-latest
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
