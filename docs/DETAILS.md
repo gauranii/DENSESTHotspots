@@ -101,8 +101,11 @@ before the call or on the number of parallel processes.
 ### Continuous integration
 
 `.github/workflows/ci.yml` runs `nix flake check` on every push and pull
-request (Ubuntu, Nix installed by `cachix/install-nix-action`). The protein
-domain counts are not in the repository, so their outputs are skipped there.
+request (macOS on Apple silicon, Nix installed by
+`cachix/install-nix-action`): the Python code matches R double for double on
+arm64 macOS, where R's long double is a double (`python/zinull/rbase.py`). The
+protein domain counts are not in the repository, so their outputs are skipped
+there.
 
 ## Outputs
 
